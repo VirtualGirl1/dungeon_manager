@@ -54,6 +54,7 @@ class DndService {
     try {
       schoolList = await db!.query('SpellSchools');
       data = data + schoolList;
+
     }
     catch (e) {
       print('SQFliteDbService insertDog CATCH: $e');

@@ -16,6 +16,7 @@ class SchoolListState extends State<SchoolListPage> {
 
   final DndService dndService = DndService();
   List<Map<String, dynamic>> schoolList = [];
+  Map<String, int> schoolCounts = {};
 
   @override
   void initState() {
@@ -28,6 +29,10 @@ class SchoolListState extends State<SchoolListPage> {
     var data = await dndService.getSchoolList();
     schoolList = List<Map<String, dynamic>>.from(data);
     print(schoolList);
+    // get spell count for schools
+    for (var item in schoolList) {
+      schoolCounts[item["name"]] = await dndService.getSchoolCount(item["name"]);
+    }
     setState(() { });
   }
 
@@ -47,14 +52,15 @@ class SchoolListState extends State<SchoolListPage> {
             child: ListView.builder(
               itemCount: schoolList.length,
               itemBuilder: (BuildContext context, index) {
+                var item = schoolList[index];
                 return Card(
                     child: ListTile(
                       onTap: () {
-                        print("${schoolList[index]["name"]} clicked");
+                        print("${item["name"]} clicked");
                       },
-                      title: Text(schoolList[index]["name"]),
+                      title: Text(item["name"]),
                       trailing: Text(
-                        "${schoolList[index]["count"]}",
+                        "${schoolCounts[item["name"]]}",
                         style: const TextStyle(
                           fontSize: 25
                         ),
