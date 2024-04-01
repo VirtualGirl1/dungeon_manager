@@ -63,6 +63,24 @@ class DndService {
     return data;
   }
 
+  Future<dynamic> getBuiltIns() async {
+    Uri url = Uri(
+        scheme: 'https',
+        host: 'www.dnd5eapi.co',
+        path: '/api/magic-schools',
+        query: ''
+    );
+    NetworkService networkService = NetworkService(url);
+    var data = await networkService.getData();
+    List<String> names = [];
+
+    for (var item in data["results"]) {
+      names.add(item["name"]);
+    }
+
+    return names;
+  }
+
   Future<int> getSchoolCount(String school) async {
     int count = 0;
     // try get remote count
@@ -105,7 +123,21 @@ class DndService {
       );
     }
     catch (e) {
-      print('SQFliteDbService insertDog CATCH: $e');
+      print('SQFliteDbService addSchool CATCH: $e');
+    }
+  }
+
+  Future<void> updateSchool(Map<String, dynamic> school) async {
+    try {
+      await db!.update(
+          'SpellSchools',
+          school,
+          where: "id = ?",
+        whereArgs: [school["id"]]
+      );
+    }
+    catch (e) {
+      print('SQFliteDbService addSchool CATCH: $e');
     }
   }
 

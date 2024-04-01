@@ -4,13 +4,19 @@ import 'package:flutter/material.dart';
 
 import '../../services/DndService.dart';
 
-class CreateSchoolPage extends StatefulWidget {
+class CreateOrEditSchoolPage extends StatefulWidget {
+  const CreateOrEditSchoolPage({super.key, this.edit = false, this.school});
+
+  final bool edit;
+  final Map<String, dynamic>? school;
+
   @override
-  State<StatefulWidget> createState() => CreateSchoolState();
+  State<StatefulWidget> createState() => CreateOrEditSchoolState();
 
 }
 
-class CreateSchoolState extends State<CreateSchoolPage> {
+class CreateOrEditSchoolState extends State<CreateOrEditSchoolPage> {
+
   final DndService dndService = DndService();
   final formKey = GlobalKey<FormState>();
   final TextEditingController textEditingController1 = TextEditingController();
@@ -19,11 +25,17 @@ class CreateSchoolState extends State<CreateSchoolPage> {
   late String? name, description;
 
 
-
   @override
   void initState() {
     super.initState();
     initDbHandle();
+
+    if (widget.edit) {
+      name = widget.school!["name"];
+      description = widget.school!["description"];
+      textEditingController1.text = widget.school!["name"];
+      textEditingController2.text = widget.school!["description"];
+    }
   }
 
   initDbHandle() async {
@@ -86,9 +98,16 @@ class CreateSchoolState extends State<CreateSchoolPage> {
                       try {
                         int count = await dndService.getSchoolCountInDb();
                         if (name!.isNotEmpty && description!.isNotEmpty) {
-                          await dndService.addSchool(
-                              { 'id': count+1, "name": name, "description": description }
-                          );
+                            if (widget.edit) {
+                              await dndService.updateSchool(
+                                  { 'id': widget.school!["id"], "name": name, "description": description }
+                              );
+                            }
+                            else {
+                              await dndService.addSchool(
+                                  { 'id': count+1, "name": name, "description": description }
+                              );
+                            }
                         }
                         Navigator.pop(context);
                         setState(() {});
