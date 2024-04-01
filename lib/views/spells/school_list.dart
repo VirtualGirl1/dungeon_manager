@@ -24,6 +24,7 @@ class SchoolListState extends State<SchoolListPage> {
   }
 
   void loadData() async {
+    await dndService.getOrCreateDatabaseHandle();
     var data = await dndService.getSchoolList();
     schoolList = List<Map<String, dynamic>>.from(data);
     print(schoolList);
@@ -72,7 +73,11 @@ class SchoolListState extends State<SchoolListPage> {
             MaterialPageRoute(
               builder: (context) => CreateSchoolPage()
             )
-          );
+          ).then((value) async {
+            var data = await dndService.getSchoolList();
+            schoolList = List<Map<String, dynamic>>.from(data);
+            setState(() {});
+          });
         },
         shape: const CircleBorder(),
         child: const Icon(Icons.add),

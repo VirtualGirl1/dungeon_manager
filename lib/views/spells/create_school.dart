@@ -2,6 +2,8 @@
 
 import 'package:flutter/material.dart';
 
+import '../../services/DndService.dart';
+
 class CreateSchoolPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => CreateSchoolState();
@@ -9,9 +11,24 @@ class CreateSchoolPage extends StatefulWidget {
 }
 
 class CreateSchoolState extends State<CreateSchoolPage> {
+  final DndService dndService = DndService();
   final formKey = GlobalKey<FormState>();
   final TextEditingController textEditingController1 = TextEditingController();
   final TextEditingController textEditingController2 = TextEditingController();
+
+  late String? name, description;
+
+
+
+  @override
+  void initState() {
+    super.initState();
+    initDbHandle();
+  }
+
+  initDbHandle() async {
+    await dndService.getOrCreateDatabaseHandle();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,8 +49,15 @@ class CreateSchoolState extends State<CreateSchoolPage> {
                   validator: (input) {
                     return input!.length > 2 ? null : "Must have a name";
                   },
+                  onChanged: (String input) {
+                    name = input;
+                  },
+                  onSaved: (input) {
+                    name = input;
+                  },
                   maxLength: 20,
                   decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
                     labelText: "Name"
                   ),
                 ),
@@ -42,10 +66,46 @@ class CreateSchoolState extends State<CreateSchoolPage> {
                   validator: (input) {
                     return input!.length > 2 ? null : "Must have a description";
                   },
+                  onChanged: (input) {
+                    description = input;
+                  },
+                  onSaved: (input) {
+                    description = input;
+                  },
                   maxLines: 4,
                   decoration: const InputDecoration(
-                      labelText: "Description"
+                    border: OutlineInputBorder(),
+                    labelText: "Description"
                   ),
+                ),
+                const Spacer(),
+                Center(
+                  child: ElevatedButton(
+                    onPressed: () async {
+
+                      try {
+                        int count = await dndService.getSchoolCountInDb();
+                        if (name!.isNotEmpty && description!.isNotEmpty) {
+                          await dndService.addSchool(
+                              { 'id': count+1, "name": name, "description": description }
+                          );
+                        }
+                        Navigator.pop(context);
+                        setState(() {});
+                      }
+                      catch (e) {
+                        print('HomeView addSpellSchool catch: $e');
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      shape: const CircleBorder(),
+                      padding: const EdgeInsets.all(20)
+                    ),
+                    child: const Icon(Icons.check),
+                  ),
+                ),
+                const Padding(
+                    padding: EdgeInsets.fromLTRB(0, 40, 0, 40)
                 )
               ],
             ),
