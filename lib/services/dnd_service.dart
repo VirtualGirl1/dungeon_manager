@@ -153,4 +153,16 @@ class DndService {
     }
   }
 
+  Future<void> deleteSchool(Map<String, dynamic> school) async {
+    try {
+      await db!.delete(
+        "SpellSchools",
+        where: "id = ?",
+        whereArgs: [school["id"]]
+      );
+    }
+    catch (e) {
+      print('SQFliteDbService deleteSchool CATCH: $e');
+    }
+  }
 }

@@ -88,7 +88,7 @@ class SchoolListState extends State<SchoolListPage> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => CreateOrEditSchoolPage()
+              builder: (context) => const CreateOrEditSchoolPage()
             )
           ).then((value) async {
             var data = await dndService.getSchoolList();
@@ -102,64 +102,93 @@ class SchoolListState extends State<SchoolListPage> {
     );
   }
 
-  Future<void> schoolContextAction(Map<String, dynamic> school) async {
+  Future<void> schoolContextAction(Map<String, dynamic> school, {bool delete = false}) async {
     await showDialog(
         context: context,
         builder: (BuildContext context) {
 
-          return AlertDialog(
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                OutlinedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (BuildContext builder) => SchoolDetailsPage(school: school)
-                        )
-                    );
-                  },
-                  child: const Text("View Details"),
-                ),
-                OutlinedButton(
-                  onPressed: () {
 
-                  },
-                  child: const Text("Add Spell"),
-                ),
-                Visibility(
-                  visible: !builtIns.contains(school["name"]),
-                    child: OutlinedButton(
-                      onPressed: () {
-
-                      },
-                      child: const Text("Delete School"),
-                    ),
-                ),
-                Visibility(
-                  visible: !builtIns.contains(school["name"]),
-                  child: OutlinedButton(
+          if (!delete) {
+            return AlertDialog(
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  OutlinedButton(
                     onPressed: () {
                       Navigator.pop(context);
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (BuildContext builder) => CreateOrEditSchoolPage(edit: true, school: school,)
+                              builder: (BuildContext builder) => SchoolDetailsPage(school: school)
                           )
-                      ).then((value) async {
-                        var data = await dndService.getSchoolList();
-                        schoolList = List<Map<String, dynamic>>.from(data);
-                        setState(() {});
-                      });
+                      );
                     },
-                    child: const Text("Edit School"),
+                    child: const Text("View Details"),
                   ),
-                ),
-              ],
-            ),
-          );
+                  OutlinedButton(
+                    onPressed: () {
+
+                    },
+                    child: const Text("Add Spell"),
+                  ),
+                  Visibility(
+                    visible: !builtIns.contains(school["name"]),
+                    child: OutlinedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        schoolContextAction(school, delete: true);
+                      },
+                      child: const Text("Delete School"),
+                    ),
+                  ),
+                  Visibility(
+                    visible: !builtIns.contains(school["name"]),
+                    child: OutlinedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (BuildContext builder) => CreateOrEditSchoolPage(edit: true, school: school,)
+                            )
+                        ).then((value) async {
+                          var data = await dndService.getSchoolList();
+                          schoolList = List<Map<String, dynamic>>.from(data);
+                          setState(() {});
+                        });
+                      },
+                      child: const Text("Edit School"),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+          else {
+            return AlertDialog(
+              title: Text("Delete ${school["name"]}"),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text("Deleting this item will also delete all spells under it"),
+                  Row(
+                    children: [
+                      ElevatedButton(
+                        onPressed: () async {
+                          Navigator.pop(context);
+                          await dndService.deleteSchool(school);
+                          var data = await dndService.getSchoolList();
+                          schoolList = List<Map<String, dynamic>>.from(data);
+                          setState(() { });
+                        },
+                        child: const Text("Delete")
+                      )
+                    ],
+                  )
+                ],
+              ),
+            );
+          }
         }
     );
   }
