@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 
-import '../../services/DndService.dart';
+import '../../services/dnd_service.dart';
 
 class CreateOrEditSchoolPage extends StatefulWidget {
   const CreateOrEditSchoolPage({super.key, this.edit = false, this.school});

@@ -22,7 +22,7 @@ class DndService {
         path,
         onCreate: (sqflitePackage.Database db1, int version) async {
           await db1.execute(
-            "CREATE TABLE SpellSchools(id INTEGER PRIMARY KEY, name TEXT, description TEXT)",
+            "CREATE TABLE SpellSchools(id INTEGER PRIMARY KEY, name TEXT, desc TEXT)",
           );
         },
         version: 1,
@@ -34,6 +34,7 @@ class DndService {
   }
 
   Future<dynamic> getSchoolList() async {
+    List<Map<String, dynamic>> schoolList = [];
 
     // get data from remote api
     Uri url = Uri(
@@ -46,20 +47,31 @@ class DndService {
     var data = await networkService.getData();
     data = data["results"];
     for (var item in data) {
-      item["count"] = await getSchoolCount(item["name"]);
+      var school = await getSchoolDetails(item["index"]);
+      schoolList.add(school);
     }
 
     // get local data
-    List<Map<String, dynamic>> schoolList;
     try {
-      schoolList = await db!.query('SpellSchools');
-      data = data + schoolList;
-
+      var l = await db!.query('SpellSchools');
+      schoolList = schoolList + l;
     }
     catch (e) {
       print('SQFliteDbService insertDog CATCH: $e');
     }
 
+    return schoolList;
+  }
+
+  Future<dynamic> getSchoolDetails(String school) async {
+    Uri url = Uri(
+        scheme: 'https',
+        host: 'www.dnd5eapi.co',
+        path: '/api/magic-schools/${school.toLowerCase()}',
+        query: ''
+    );
+    NetworkService networkService = NetworkService(url);
+    var data = await networkService.getData();
     return data;
   }
 

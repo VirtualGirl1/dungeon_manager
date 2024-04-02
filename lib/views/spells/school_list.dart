@@ -1,7 +1,8 @@
 
 
-import 'package:dungeon_manager/services/DndService.dart';
+import 'package:dungeon_manager/services/dnd_service.dart';
 import 'package:dungeon_manager/views/spells/create_school.dart';
+import 'package:dungeon_manager/views/spells/school_details.dart';
 import 'package:flutter/material.dart';
 
 class SchoolListPage extends StatefulWidget {
@@ -112,7 +113,13 @@ class SchoolListState extends State<SchoolListPage> {
               children: [
                 OutlinedButton(
                   onPressed: () {
-
+                    Navigator.pop(context);
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (BuildContext builder) => SchoolDetailsPage(school: school)
+                        )
+                    );
                   },
                   child: const Text("View Details"),
                 ),
