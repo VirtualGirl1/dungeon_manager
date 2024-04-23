@@ -2,7 +2,9 @@
 
 import 'package:dungeon_manager/services/dnd_service.dart';
 import 'package:dungeon_manager/views/spells/create_school.dart';
+import 'package:dungeon_manager/views/spells/create_spell.dart';
 import 'package:dungeon_manager/views/spells/school_details.dart';
+import 'package:dungeon_manager/views/spells/spell_list.dart';
 import 'package:flutter/material.dart';
 
 class SchoolListPage extends StatefulWidget {
@@ -63,7 +65,12 @@ class SchoolListState extends State<SchoolListPage> {
                 var item = schoolList[index];
                 return Card(
                     child: ListTile(
-                      onTap: () {
+                      onTap: () async {
+                        Navigator.push(
+                            context, MaterialPageRoute(
+                            builder: (BuildContext builder) => SpellListPage(schoolName: item["name"])
+                            )
+                        );
                         print("${item["name"]} clicked");
                       },
                       onLongPress: () {
@@ -127,7 +134,13 @@ class SchoolListState extends State<SchoolListPage> {
                   ),
                   OutlinedButton(
                     onPressed: () {
-
+                      Navigator.pop(context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (BuildContext builder) => CreateSpellPage()
+                        )
+                      );
                     },
                     child: const Text("Add Spell"),
                   ),

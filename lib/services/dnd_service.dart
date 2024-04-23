@@ -24,6 +24,9 @@ class DndService {
           await db1.execute(
             "CREATE TABLE SpellSchools(id INTEGER PRIMARY KEY, name TEXT, desc TEXT)",
           );
+          await db1.execute(
+            "CREATE TABLE Spells(id INTEGER PRIMARY KEY, school TEXT, name TEXT, desc TEXT, higherLevel TEXT, range TEXT)"
+          );
         },
         version: 1,
       );
@@ -163,6 +166,59 @@ class DndService {
     }
     catch (e) {
       print('SQFliteDbService deleteSchool CATCH: $e');
+    }
+  }
+
+  Future<dynamic> getSpellsBySchool(String school) async {
+    Uri url = Uri(
+        scheme: 'https',
+        host: 'www.dnd5eapi.co',
+        path: '/api/spells',
+        query: 'school=$school'
+    );
+    NetworkService networkService = NetworkService(url);
+    var data = await networkService.getData();
+
+    List<Map<String, dynamic>> spells = [];
+    for (var s in data["results"]) {
+      var spell = await getSpellDetails(s["index"]);
+      spells.add(spell);
+    }
+    return spells;
+  }
+
+  Future<dynamic> getSpellDetails(String index) async {
+    Uri url = Uri(
+        scheme: 'https',
+        host: 'www.dnd5eapi.co',
+        path: '/api/spells/$index',
+        query: ''
+    );
+    NetworkService networkService = NetworkService(url);
+    var data = await networkService.getData();
+    return data;
+  }
+
+  Future<int> getSpellsInDb() async {
+    try {
+      var c = await db!.query('Spells');
+      return c.length;
+    }
+    catch (e) {
+      return 0;
+    }
+  }
+
+  Future<void> addSpell(Map<String, dynamic> spell) async {
+    try {
+      await db!.insert(
+          'Spells',
+          spell,
+          conflictAlgorithm: sqflitePackage.ConflictAlgorithm.replace
+      );
+    }
+    catch (e) {
+      print('SQFliteDbService addSpell CATCH: $e');
     }
   }
 }

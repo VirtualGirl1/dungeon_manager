@@ -24,7 +24,6 @@ class CreateOrEditSchoolState extends State<CreateOrEditSchoolPage> {
 
   late String? name, description;
 
-
   @override
   void initState() {
     super.initState();
@@ -90,6 +89,7 @@ class CreateOrEditSchoolState extends State<CreateOrEditSchoolPage> {
                     labelText: "Description"
                   ),
                 ),
+
                 const Spacer(),
                 Center(
                   child: ElevatedButton(
