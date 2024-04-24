@@ -115,6 +115,20 @@ class DndService {
       print(e);
     }
 
+    // get spells in db
+    try {
+      var l = await db!.query(
+          'Spells',
+          where: "school = ?",
+          whereArgs: [school]
+
+      );
+      count += l.length;
+    }
+    catch (e) {
+      print(e);
+    }
+
     return count;
   }
 
@@ -187,7 +201,12 @@ class DndService {
 
     // get spells in db
     try {
-      var l = await db!.query('Spells');
+      var l = await db!.query(
+        'Spells',
+        where: "school = ?",
+        whereArgs: [school]
+
+      );
       spells = spells + l;
     }
     catch (e) {
