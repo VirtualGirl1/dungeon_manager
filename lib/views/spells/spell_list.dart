@@ -24,6 +24,7 @@ class SpellListPageState extends State<SpellListPage> {
   }
 
   loadSpells() async {
+    await dndService.getOrCreateDatabaseHandle();
     spells = await dndService.getSpellsBySchool(widget.schoolName);
     setState(() { });
   }

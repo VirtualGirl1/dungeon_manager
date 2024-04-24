@@ -196,6 +196,9 @@ class CreateSpellState extends State<CreateSpellPage> {
                   child: ElevatedButton(
                     onPressed: () async {
                       try {
+                        if (rangeSelect == 'self' || rangeSelect == 'melee') {
+                          range = rangeSelect;
+                        }
                         int count = await dndService.getSpellsInDb();
                         await dndService.addSpell(
                           {'id': count+1, 'name': name, 'desc': desc, 'higherLevel': higherLevel, 'school': school, 'range': range}

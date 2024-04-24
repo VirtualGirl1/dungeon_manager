@@ -22,10 +22,10 @@ class DndService {
         path,
         onCreate: (sqflitePackage.Database db1, int version) async {
           await db1.execute(
-            "CREATE TABLE SpellSchools(id INTEGER PRIMARY KEY, name TEXT, desc TEXT)",
+            "CREATE TABLE SpellSchools(id INTEGER PRIMARY KEY, name TEXT, description TEXT);"
           );
           await db1.execute(
-            "CREATE TABLE Spells(id INTEGER PRIMARY KEY, school TEXT, name TEXT, desc TEXT, higherLevel TEXT, range TEXT)"
+              "CREATE TABLE Spells(id INTEGER PRIMARY KEY, school TEXT, name TEXT, desc TEXT, higherLevel TEXT, range TEXT);"
           );
         },
         version: 1,
@@ -60,7 +60,7 @@ class DndService {
       schoolList = schoolList + l;
     }
     catch (e) {
-      print('SQFliteDbService insertDog CATCH: $e');
+      print('SQFliteDbService insertSpell CATCH: $e');
     }
 
     return schoolList;
@@ -184,6 +184,16 @@ class DndService {
       var spell = await getSpellDetails(s["index"]);
       spells.add(spell);
     }
+
+    // get spells in db
+    try {
+      var l = await db!.query('Spells');
+      spells = spells + l;
+    }
+    catch (e) {
+      print(e);
+    }
+
     return spells;
   }
 
